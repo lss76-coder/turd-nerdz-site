@@ -301,7 +301,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
                 }}
               >
                 <div className="flex gap-0.5">
-                  {Array.from({ length: Math.min(n, 3) }).map((_, i) => (
+                  {Array.from({ length: Math.min(n, 4) }).map((_, i) => (
                     <IconDog key={i} className="h-7 w-7 text-teal" />
                   ))}
                 </div>
