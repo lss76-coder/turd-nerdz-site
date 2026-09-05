@@ -110,16 +110,164 @@ function writeDebugStatus(result) {
   sheet.getRange(2, 1).setValue(new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }) + " — " + result);
 }
 
-function sendNotification(tabName, headers, row) {
-  var lines = headers.map(function (h, i) {
-    return h + ": " + row[i];
+// Groups each lead type's fields into labeled sections instead of one long
+// flat list, so the notification email reads like the form the customer
+// actually filled out. Anything that shows up in a field but isn't listed
+// here (e.g. a brand-new form field) still gets printed, tacked onto an
+// "Other" section at the end — nothing is ever silently dropped.
+var SECTION_MAP = {
+  "Bookings": [
+    { title: "Contact Info", fields: ["Name", "Phone", "Email", "Street", "City", "ZIP"] },
+    { title: "Service Details", fields: ["Dogs", "Frequency", "Yard size", "Preferred start date", "Yard deodorizing add-on", "Price"] },
+    { title: "Access & Safety", fields: ["Yard type", "Dog safety notes", "Gate location", "Trash can location", "Gate code", "Community/entry code"] },
+    { title: "Other", fields: ["Dog names, behavior & notes", "How they heard about us", "Previous customer"] },
+  ],
+  "Quote Leads": [
+    { title: "Lead", fields: ["Phone", "ZIP", "Dogs", "Frequency", "Yard size"] },
+  ],
+  "Contact Messages": [
+    { title: "Contact Info", fields: ["Name", "Phone", "Email"] },
+    { title: "Message", fields: ["Message"] },
+  ],
+  "Referrals": [
+    { title: "Referring Customer", fields: ["Referring customer", "Referring customer email"] },
+    { title: "Friend Being Referred", fields: ["Friend's name", "Friend's phone or email"] },
+  ],
+  "Portal Waitlist": [
+    { title: "Details", fields: ["Email"] },
+  ],
+};
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
   });
+}
+
+// Builds { sections, submittedAt } — the field data grouped for display,
+// in a shape that both the HTML and plain-text renderers below can share.
+function groupFields(tabName, headers, row) {
+  var data = {};
+  headers.forEach(function (h, i) {
+    data[h] = row[i];
+  });
+  var submittedAt = data["Submitted At"];
+
+  var layout = SECTION_MAP[tabName] || [];
+  var used = { "Submitted At": true };
+  var sections = layout
+    .map(function (section) {
+      var fields = section.fields
+        .filter(function (key) {
+          return data[key] !== undefined && data[key] !== "";
+        })
+        .map(function (key) {
+          used[key] = true;
+          return { label: key, value: data[key] };
+        });
+      return { title: section.title, fields: fields };
+    })
+    .filter(function (section) {
+      return section.fields.length > 0;
+    });
+
+  var leftover = headers
+    .filter(function (h) {
+      return !used[h] && data[h] !== "";
+    })
+    .map(function (h) {
+      return { label: h, value: data[h] };
+    });
+  if (leftover.length > 0) {
+    sections.push({ title: layout.length > 0 ? "Other" : "Details", fields: leftover });
+  }
+
+  return { sections: sections, submittedAt: submittedAt };
+}
+
+function buildHtmlBody(tabName, grouped) {
+  var sectionsHtml = grouped.sections
+    .map(function (section) {
+      var rows = section.fields
+        .map(function (f) {
+          var value = escapeHtml(f.value);
+          if (f.label === "Phone" && /\d{7,}/.test(String(f.value).replace(/\D/g, ""))) {
+            var tel = String(f.value).replace(/\D/g, "");
+            value = '<a href="tel:' + tel + '" style="color:#c1440e;text-decoration:none;font-weight:600;">' + value + "</a>";
+          }
+          if (f.label === "Email") {
+            value = '<a href="mailto:' + escapeHtml(f.value) + '" style="color:#c1440e;text-decoration:none;">' + value + "</a>";
+          }
+          return (
+            '<tr>' +
+            '<td style="padding:4px 12px 4px 0;color:#5b6b66;font-size:13px;white-space:nowrap;vertical-align:top;">' +
+            escapeHtml(f.label) +
+            "</td>" +
+            '<td style="padding:4px 0;color:#1f2d2a;font-size:14px;">' +
+            value +
+            "</td>" +
+            "</tr>"
+          );
+        })
+        .join("");
+      return (
+        '<div style="margin-bottom:18px;">' +
+        '<div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#2f6f62;border-bottom:2px solid #eef3f1;padding-bottom:4px;margin-bottom:6px;">' +
+        escapeHtml(section.title) +
+        "</div>" +
+        '<table cellpadding="0" cellspacing="0" role="presentation">' +
+        rows +
+        "</table>" +
+        "</div>"
+      );
+    })
+    .join("");
+
+  return (
+    '<div style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:520px;margin:0 auto;">' +
+    '<div style="background:#2f6f62;padding:16px 20px;border-radius:10px 10px 0 0;">' +
+    '<span style="color:#ffffff;font-size:16px;font-weight:700;">New ' +
+    escapeHtml(tabName) +
+    "</span>" +
+    '<div style="color:#cfe3dd;font-size:12px;margin-top:2px;">' +
+    escapeHtml(grouped.submittedAt) +
+    "</div>" +
+    "</div>" +
+    '<div style="border:1px solid #eef3f1;border-top:none;border-radius:0 0 10px 10px;padding:18px 20px;">' +
+    sectionsHtml +
+    '<div style="font-size:11px;color:#9aa6a2;margin-top:4px;">Logged in the &quot;' +
+    escapeHtml(tabName) +
+    '&quot; tab of your Leads sheet.</div>' +
+    "</div>" +
+    "</div>"
+  );
+}
+
+function buildPlainTextBody(tabName, grouped) {
+  var blocks = grouped.sections.map(function (section) {
+    var heading = section.title.toUpperCase();
+    var fieldLines = section.fields.map(function (f) {
+      return "  " + f.label + ": " + f.value;
+    });
+    return heading + "\n" + fieldLines.join("\n");
+  });
+
+  return (
+    "New " + tabName + " — " + grouped.submittedAt + "\n\n" +
+    blocks.join("\n\n") +
+    "\n\nLogged in the \"" + tabName + "\" tab of your Leads sheet."
+  );
+}
+
+function sendNotification(tabName, headers, row) {
+  var grouped = groupFields(tabName, headers, row);
 
   try {
     MailApp.sendEmail({
       to: NOTIFY_EMAIL,
       subject: "New " + tabName + " — The Turd Nerdz",
-      body: lines.join("\n") + "\n\nLogged in the \"" + tabName + "\" tab of your Leads sheet.",
+      body: buildPlainTextBody(tabName, grouped),
+      htmlBody: buildHtmlBody(tabName, grouped),
     });
     return "sent to " + NOTIFY_EMAIL;
   } catch (err) {
