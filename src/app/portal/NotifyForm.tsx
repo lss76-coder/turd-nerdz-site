@@ -1,27 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { CONTACT_EMAIL } from "@/lib/config";
 import { logLead } from "@/lib/sendLead";
-import { buildEmailBody } from "@/lib/formatEmail";
-import { sendEmail } from "@/lib/sendEmail";
 
 export default function NotifyForm() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const subject = "Notify me when the Client Portal launches";
-    const body = buildEmailBody("New portal waitlist signup from theturdnerdz.com/portal.", [
-      { fields: { Email: email } },
-    ]);
     logLead("Portal Waitlist", { Email: email });
-
-    const emailed = await sendEmail(subject, body);
-    if (!emailed) {
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    }
     setSent(true);
   }
 

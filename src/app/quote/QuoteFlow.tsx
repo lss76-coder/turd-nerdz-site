@@ -20,8 +20,6 @@ import {
 } from "@/components/icons";
 import { Sticker } from "@/components/Decor";
 import { logLead } from "@/lib/sendLead";
-import { buildEmailBody, EmailSection } from "@/lib/formatEmail";
-import { sendEmail } from "@/lib/sendEmail";
 import { isValidPhone, PHONE_ERROR, PHONE_PLACEHOLDER } from "@/lib/validate";
 
 type YardSize = "regular" | "large";
@@ -43,17 +41,6 @@ const YARD_OPTIONS: { value: YardSize; label: string; blurb: string; Icon: IconC
 ];
 
 const TOTAL_STEPS = 4;
-
-// Sends the lead notification via Resend (src/app/api/lead). Falls back to
-// opening a mailto: draft only if that fails (e.g. RESEND_API_KEY isn't
-// configured yet) so nothing is silently lost during setup. Leads are also
-// logged to a Google Sheet via logLead() (see src/lib/sendLead.ts).
-async function sendLead(subject: string, body: string) {
-  const emailed = await sendEmail(subject, body);
-  if (!emailed) {
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
-}
 
 function quickDateOptions() {
   const fmt = (d: Date) =>
@@ -185,10 +172,6 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
       ZIP: zip ?? "not provided",
     };
     logLead("Quote Leads", leadFields);
-    sendLead(
-      `Quote Lead - ${gatePhone}`,
-      buildEmailBody("New quote lead from theturdnerdz.com.", [{ fields: leadFields }])
-    );
     setPriceRevealed(true);
   }
 
@@ -240,18 +223,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
       "Previous customer": form.previousCustomer ? "Yes" : "No",
     };
 
-    const sections: EmailSection[] = [
-      { title: "CONTACT INFO", fields: contactInfo },
-      { title: "SERVICE DETAILS", fields: serviceDetails },
-      { title: "ACCESS & SAFETY", fields: accessAndSafety },
-      { title: "OTHER", fields: other },
-    ];
-
     logLead("Bookings", { ...contactInfo, ...serviceDetails, ...accessAndSafety, ...other });
-    sendLead(
-      `Booking Request - ${form.name}`,
-      buildEmailBody("New booking request from theturdnerdz.com.", sections)
-    );
     setSubmitted(true);
   }
 

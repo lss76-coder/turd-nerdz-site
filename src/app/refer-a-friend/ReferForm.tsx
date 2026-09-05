@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CONTACT_EMAIL } from "@/lib/config";
 import { logLead } from "@/lib/sendLead";
-import { buildEmailBody } from "@/lib/formatEmail";
-import { sendEmail } from "@/lib/sendEmail";
 import Mascot from "@/components/Mascot";
 
 export default function ReferForm() {
@@ -16,19 +13,8 @@ export default function ReferForm() {
     friendContact: "",
   });
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const subject = "Referral: " + form.yourName + " → " + form.friendName;
-    const body = buildEmailBody("New referral from theturdnerdz.com/refer-a-friend.", [
-      {
-        title: "REFERRING CUSTOMER",
-        fields: { Name: form.yourName, Email: form.yourEmail },
-      },
-      {
-        title: "FRIEND BEING REFERRED",
-        fields: { Name: form.friendName, "Phone or email": form.friendContact },
-      },
-    ]);
 
     logLead("Referrals", {
       "Referring customer": form.yourName,
@@ -37,10 +23,6 @@ export default function ReferForm() {
       "Friend's phone or email": form.friendContact,
     });
 
-    const emailed = await sendEmail(subject, body);
-    if (!emailed) {
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    }
     setSubmitted(true);
   }
 

@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CONTACT_EMAIL } from "@/lib/config";
 import { logLead } from "@/lib/sendLead";
-import { buildEmailBody } from "@/lib/formatEmail";
-import { sendEmail } from "@/lib/sendEmail";
 import { isValidPhone, PHONE_ERROR, PHONE_PLACEHOLDER } from "@/lib/validate";
 import Mascot from "@/components/Mascot";
 
@@ -13,21 +10,13 @@ export default function ContactForm() {
   const [phoneError, setPhoneError] = useState("");
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (form.phone && !isValidPhone(form.phone)) {
       setPhoneError(PHONE_ERROR);
       return;
     }
     setPhoneError("");
-
-    const body = buildEmailBody("New message from theturdnerdz.com/contact.", [
-      {
-        title: "CONTACT INFO",
-        fields: { Name: form.name, Email: form.email, Phone: form.phone || "not provided" },
-      },
-      { title: "MESSAGE", raw: form.message },
-    ]);
 
     logLead("Contact Messages", {
       Name: form.name,
@@ -36,12 +25,6 @@ export default function ContactForm() {
       Message: form.message,
     });
 
-    const emailed = await sendEmail("Website Contact - " + form.name, body);
-    if (!emailed) {
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-        "Website Contact - " + form.name
-      )}&body=${encodeURIComponent(body)}`;
-    }
     setSubmitted(true);
   }
 
