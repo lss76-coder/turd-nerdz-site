@@ -68,6 +68,13 @@ const YARD_LOCATION_OPTIONS = [
   "Backyard only",
   "No gate — open access",
 ];
+const TRASH_ACCESS_OPTIONS = [
+  "Driveway",
+  "Curb",
+  "Side yard",
+  "Garage",
+  "Haul it away for us — we don't want to manage a bin",
+];
 const HOW_HEARD_OPTIONS = ["Google search", "Facebook or Nextdoor", "Referral from a friend", "Door hanger / flyer", "Other"];
 
 export default function QuoteFlow({ zip }: { zip?: string }) {
@@ -224,6 +231,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
     };
 
     logLead("Bookings", { ...contactInfo, ...serviceDetails, ...accessAndSafety, ...other });
+    window.scrollTo(0, 0);
     setSubmitted(true);
   }
 
@@ -567,7 +575,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
                 label="Where is your trash can located?"
                 value={form.trashLocation}
                 onChange={(v) => setForm((f) => ({ ...f, trashLocation: v }))}
-                options={YARD_LOCATION_OPTIONS}
+                options={TRASH_ACCESS_OPTIONS}
                 required
               />
             </div>
