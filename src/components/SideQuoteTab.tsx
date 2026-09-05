@@ -30,15 +30,15 @@ export default function SideQuoteTab() {
   return (
     <Link
       href="/quote"
-      className={`fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 rounded-r-xl bg-coral px-3 py-5 shadow-lg shadow-coral/30 transition-all hover:px-4 sm:block ${
+      className={`fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 rounded-r-xl bg-coral px-3.5 py-7 shadow-lg shadow-coral/30 transition-all hover:px-5 sm:block ${
         hidden ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
       <span
-        className="font-heading text-sm font-bold tracking-wide text-white [writing-mode:vertical-rl]"
+        className="font-heading text-base font-bold tracking-wider text-white [writing-mode:vertical-rl]"
         style={{ transform: "rotate(180deg)" }}
       >
-        Free Quote →
+        Free Quote&nbsp;&nbsp;→
       </span>
     </Link>
   );
