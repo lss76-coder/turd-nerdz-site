@@ -35,6 +35,16 @@ export const FREQUENCY_MULTIPLIERS = {
 // Refer a Friend: both sides get this amount.
 export const REFERRAL_CREDIT = 20;
 
+// Launch promo: 50% off for the first few months, limited to a fixed number
+// of new customers. The Google Apps Script webhook (google-apps-script/leads.gs)
+// is the source of truth for how many spots are actually claimed — this
+// PROMO_TOTAL_SPOTS value must match PROMO_TOTAL_SPOTS in that file, since
+// it's what the script uses to decide when to stop honoring the deal.
+export const PROMO_ENABLED = true;
+export const PROMO_TOTAL_SPOTS = 10;
+export const PROMO_MONTHS = 3;
+export const PROMO_DISCOUNT = 0.5;
+
 // Tool/shoe sanitizing between every yard (kennel-grade disinfectant) is
 // always included — never an add-on. Yard deodorizing is the paid add-on.
 export const DEODORIZER_MONTHLY = 10;

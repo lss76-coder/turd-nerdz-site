@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Mascot from "@/components/Mascot";
 import {
   CONTACT_EMAIL,
   DEODORIZER_MONTHLY,
+  PROMO_DISCOUNT,
+  PROMO_ENABLED,
+  PROMO_MONTHS,
   calculateQuote,
   Frequency,
   isZipInServiceArea,
@@ -20,6 +23,7 @@ import {
 } from "@/components/icons";
 import { Sticker } from "@/components/Decor";
 import { logLead } from "@/lib/sendLead";
+import { fetchPromoSpotsLeft } from "@/lib/promo";
 import { isValidPhone, PHONE_ERROR, PHONE_PLACEHOLDER } from "@/lib/validate";
 
 type YardSize = "regular" | "large";
@@ -87,6 +91,8 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
   const [bookingPhoneError, setBookingPhoneError] = useState("");
   const [priceRevealed, setPriceRevealed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [promoSpotsLeft, setPromoSpotsLeft] = useState<number | null>(null);
+  const [promoWon, setPromoWon] = useState(false);
   const [wantsDeodorizer, setWantsDeodorizer] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [customDate, setCustomDate] = useState("");
@@ -111,12 +117,20 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
     agreeTerms: false,
   });
 
+  useEffect(() => {
+    fetchPromoSpotsLeft().then(setPromoSpotsLeft);
+  }, []);
+
   const zipInArea = zip ? isZipInServiceArea(zip) : null;
 
   const quote = useMemo(() => {
     if (dogs == null || frequency == null) return null;
     return calculateQuote(dogs, frequency);
   }, [dogs, frequency]);
+
+  // The promo only applies to recurring plans (it's "X% off your first N
+  // months" — a one-time cleanup has no "months" for it to discount).
+  const promoAvailable = PROMO_ENABLED && !!quote && !quote.isOneTime && (promoSpotsLeft ?? 1) > 0;
 
   const selectionsComplete = dogs != null && frequency != null && yardSize != null;
   const progressFilled = [dogs, frequency, yardSize, priceRevealed ? true : null].filter(
@@ -137,6 +151,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
     setBookingPhoneError("");
     setPriceRevealed(false);
     setSubmitted(false);
+    setPromoWon(false);
     setWantsDeodorizer(false);
     setStartDate("");
     setCustomDate("");
@@ -184,7 +199,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
 
   const addonTotal = quote && !quote.isOneTime && wantsDeodorizer ? DEODORIZER_MONTHLY : 0;
 
-  function handleBookingSubmit(e: React.FormEvent) {
+  async function handleBookingSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!quote) return;
     if (!isValidPhone(form.phone)) {
@@ -195,7 +210,9 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
 
     const priceLine = quote.isOneTime
       ? `One-time cleanup: $${quote.oneTime}`
-      : `Estimated: $${quote.monthly + addonTotal}/month (${frequency}), first cleanup free`;
+      : promoAvailable
+        ? `Estimated: $${Math.round((quote.monthly + addonTotal) * (1 - PROMO_DISCOUNT))}/month for first ${PROMO_MONTHS} months (promo requested), then $${quote.monthly + addonTotal}/month (${frequency}), first cleanup free`
+        : `Estimated: $${quote.monthly + addonTotal}/month (${frequency}), first cleanup free`;
 
     const resolvedStartDate =
       startDate === "custom" ? customDate || "not specified" : startDate || "not specified";
@@ -230,7 +247,14 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
       "Previous customer": form.previousCustomer ? "Yes" : "No",
     };
 
-    logLead("Bookings", { ...contactInfo, ...serviceDetails, ...accessAndSafety, ...other });
+    const response = await logLead("Bookings", {
+      ...contactInfo,
+      ...serviceDetails,
+      ...accessAndSafety,
+      ...other,
+    });
+    if (response?.promoApplied) setPromoWon(true);
+    if (typeof response?.promoSpotsLeft === "number") setPromoSpotsLeft(response.promoSpotsLeft);
     window.scrollTo(0, 0);
     setSubmitted(true);
   }
@@ -242,6 +266,12 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
         <h2 className="mt-4 font-heading text-2xl font-extrabold text-teal">
           You&apos;re All Set!
         </h2>
+        {promoWon && (
+          <p className="mx-auto mt-3 inline-block rounded-full border-2 border-coral bg-coral/10 px-4 py-2 font-heading text-sm font-bold text-coral-dark">
+            🎉 You&apos;re one of our first customers —{" "}
+            {PROMO_DISCOUNT * 100}% off your first {PROMO_MONTHS} months is locked in!
+          </p>
+        )}
         <p className="mt-2 text-charcoal/70">
           Your request has been submitted — we&apos;ll respond very quickly
           to confirm your first visit. Questions in the meantime? Reach us
@@ -404,6 +434,17 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
                   ${quote.oneTime}{" "}
                   <span className="text-base font-semibold text-charcoal/60">flat</span>
                 </p>
+              ) : promoAvailable ? (
+                <div>
+                  <p className="font-heading text-3xl font-extrabold text-teal">
+                    ${Math.round((quote.monthly + addonTotal) * (1 - PROMO_DISCOUNT))}
+                    <span className="text-base font-semibold text-charcoal/60">/month</span>
+                  </p>
+                  <p className="text-sm text-charcoal/60">
+                    for your first {PROMO_MONTHS} months, then{" "}
+                    <span className="line-through">${quote.monthly + addonTotal}/mo</span>
+                  </p>
+                </div>
               ) : (
                 <p className="font-heading text-3xl font-extrabold text-teal">
                   ${quote.monthly + addonTotal}
@@ -413,11 +454,18 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
             </div>
           </div>
 
-          {!quote.isOneTime && (
-            <Sticker tone="coral" rotate={-2} className="mt-3">
-              First cleanup&apos;s free
-            </Sticker>
-          )}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {!quote.isOneTime && (
+              <Sticker tone="coral" rotate={-2}>
+                First cleanup&apos;s free
+              </Sticker>
+            )}
+            {promoAvailable && (
+              <Sticker tone="green" rotate={2}>
+                🔥 {PROMO_DISCOUNT * 100}% off — {promoSpotsLeft ?? "a few"} spots left
+              </Sticker>
+            )}
+          </div>
           {yardSize === "large" && (
             <p className="mt-2 text-xs text-charcoal/60">
               Extra-large or heavily wooded yards may see a small adjustment,

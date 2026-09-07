@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import CTAButton from "@/components/CTAButton";
 import { IconCheckBadge } from "@/components/icons";
+import PromoBanner from "@/components/PromoBanner";
 import {
   DEODORIZER_MONTHLY,
   Frequency,
@@ -39,6 +40,7 @@ export default function PricingPage() {
         title="Pricing That Fits Your Yard"
         subtitle="No hidden fees, no surprise add-ons, no long-term contracts. Pick a frequency, see the price."
       >
+        <PromoBanner className="mb-4" />
         <CTAButton href="/quote" variant="secondary">
           Skip The Table, Get My Quote →
         </CTAButton>

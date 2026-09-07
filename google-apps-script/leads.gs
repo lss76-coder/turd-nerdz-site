@@ -42,6 +42,14 @@
 
 var NOTIFY_EMAIL = "info@theturdnerdz.com";
 
+// Launch promo: 50% off for the first PROMO_MONTHS months, limited to the
+// first PROMO_TOTAL_SPOTS bookings. This value must match PROMO_TOTAL_SPOTS
+// in src/lib/config.ts on the website — that copy is just for display
+// (the "X spots left" banner); this script is the actual source of truth
+// for when the deal runs out, since it's the only thing every booking
+// passes through.
+var PROMO_TOTAL_SPOTS = 10;
+
 // One-time manual step if email notifications ever come back as
 // "permission" errors: in the toolbar dropdown next to the Run button,
 // select "authorizeMailPermission", click Run, and approve the Google
@@ -53,12 +61,61 @@ function authorizeMailPermission() {
   MailApp.sendEmail(NOTIFY_EMAIL, "Turd Nerdz script — permission test", "If you got this, email sending is authorized.");
 }
 
+// Reads/writes the running claimed-spot count in a "Promo" tab (cell B1),
+// guarded by a script lock so two bookings landing at the same instant
+// can't both slip in as the "last" spot. Returns the count of spots
+// claimed *before* this call — pass claim=true to also reserve one.
+function promoSpotsClaimed(claim) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("Promo");
+    if (!sheet) {
+      sheet = ss.insertSheet("Promo");
+      sheet.getRange("A1").setValue("Spots claimed (50% off, first " + PROMO_TOTAL_SPOTS + ")");
+      sheet.getRange("B1").setValue(0);
+    }
+    var claimed = Number(sheet.getRange("B1").getValue()) || 0;
+    if (claim && claimed < PROMO_TOTAL_SPOTS) {
+      sheet.getRange("B1").setValue(claimed + 1);
+    }
+    return claimed;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// Lets the website ask "how many spots are left?" without submitting
+// anything, so it can show a live countdown on the promo banner.
+function doGet(e) {
+  var claimed = promoSpotsClaimed(false);
+  var spotsLeft = Math.max(0, PROMO_TOTAL_SPOTS - claimed);
+  return ContentService.createTextOutput(
+    JSON.stringify({ ok: true, promoSpotsLeft: spotsLeft, promoTotalSpots: PROMO_TOTAL_SPOTS })
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+
 function doPost(e) {
   var data = JSON.parse(e.postData.contents);
   var tabName = data.type || "Leads";
   delete data.type;
 
   data["Submitted At"] = new Date().toLocaleString("en-US", { timeZone: "America/Chicago" });
+
+  // Only an actual booking (not a quote lead, contact message, etc.) can
+  // claim a promo spot — and only once, right here, so nothing external
+  // can call this twice for the same person.
+  var promoApplied = false;
+  var spotsLeftAfter = null;
+  if (tabName === "Bookings") {
+    var claimedBefore = promoSpotsClaimed(true);
+    promoApplied = claimedBefore < PROMO_TOTAL_SPOTS;
+    spotsLeftAfter = Math.max(0, PROMO_TOTAL_SPOTS - (claimedBefore + (promoApplied ? 1 : 0)));
+    data["Promo Deal"] = promoApplied
+      ? "Yes — 50% off first 3 months (spot #" + (claimedBefore + 1) + ")"
+      : "No — spots filled";
+  }
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(tabName);
@@ -92,7 +149,13 @@ function doPost(e) {
   var notifyResult = sendNotification(tabName, headers, row);
   writeDebugStatus(notifyResult);
 
-  return ContentService.createTextOutput(JSON.stringify({ ok: true, notify: notifyResult })).setMimeType(
+  var response = { ok: true, notify: notifyResult };
+  if (tabName === "Bookings") {
+    response.promoApplied = promoApplied;
+    response.promoSpotsLeft = spotsLeftAfter;
+  }
+
+  return ContentService.createTextOutput(JSON.stringify(response)).setMimeType(
     ContentService.MimeType.JSON
   );
 }
@@ -118,7 +181,7 @@ function writeDebugStatus(result) {
 var SECTION_MAP = {
   "Bookings": [
     { title: "Contact Info", fields: ["Name", "Phone", "Email", "Street", "City", "ZIP"] },
-    { title: "Service Details", fields: ["Dogs", "Frequency", "Yard size", "Preferred start date", "Yard deodorizing add-on", "Price"] },
+    { title: "Service Details", fields: ["Dogs", "Frequency", "Yard size", "Preferred start date", "Yard deodorizing add-on", "Price", "Promo Deal"] },
     { title: "Access & Safety", fields: ["Yard type", "Dog safety notes", "Gate location", "Trash can location", "Gate code", "Community/entry code"] },
     { title: "Other", fields: ["Dog names, behavior & notes", "How they heard about us", "Previous customer"] },
   ],
