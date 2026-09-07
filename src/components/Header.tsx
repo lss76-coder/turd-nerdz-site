@@ -43,33 +43,9 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-4 xl:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="font-heading text-sm font-semibold text-charcoal hover:text-coral"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="hidden items-center gap-3 xl:flex">
-          <a
-            href={`tel:${PHONE_TEL}`}
-            className="rounded-full border-2 border-teal px-4 py-2.5 font-heading text-sm font-bold text-teal hover:bg-teal hover:text-cream"
-          >
-            {PHONE_DISPLAY}
-          </a>
-          <CTAButton href="/quote" size="md">
-            Free Quote
-          </CTAButton>
-        </div>
-
         <button
           type="button"
-          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-teal text-teal xl:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-teal text-teal"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -87,7 +63,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <div className="flex-1 overflow-y-auto border-t-2 border-teal/10 bg-cream px-4 pb-6 pt-2 xl:hidden">
+        <div className="flex-1 overflow-y-auto border-t-2 border-teal/10 bg-cream px-4 pb-6 pt-2">
           <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link
