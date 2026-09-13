@@ -16,7 +16,7 @@ import FinalCTA from "@/components/home/FinalCTA";
 export const metadata: Metadata = {
   title: "Dog Poop Pickup in Bluewater Bay & Niceville, FL",
   description:
-    "The Turd Nerdz removes pet waste weekly in Bluewater Bay & Niceville, FL. No contracts, photo proof every visit, first cleanup free. Get an instant quote.",
+    "The Turd Nerdz removes pet waste weekly in Bluewater Bay & Niceville, FL. No contracts, photo proof every visit, 50% off your first 3 months for our first 10 customers. Get an instant quote.",
   alternates: { canonical: "/" },
 };
 

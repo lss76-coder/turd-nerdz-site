@@ -131,7 +131,8 @@ export default async function LocationPage({
             Ready For A Cleaner Yard In {loc.name}?
           </h3>
           <p className="mt-1.5 text-sm text-charcoal/70">
-            First cleanup free with any new recurring plan.
+            50% off your first 3 months — limited to our first 10 new
+            customers.
           </p>
           <CTAButton href="/quote" className="mt-4">
             Get Instant Quote →

@@ -64,7 +64,8 @@ export default function Footer() {
             Ready?
           </h3>
           <p className="mt-3 text-sm text-cream/80">
-            First cleanup free with any new recurring plan.
+            50% off your first 3 months — limited to our first 10 new
+            customers.
           </p>
           <Link
             href="/quote"

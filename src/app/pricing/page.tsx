@@ -113,7 +113,8 @@ export default function PricingPage() {
         </div>
 
         <p className="mt-4 text-center text-sm text-charcoal/60">
-          First cleanup free with any new recurring plan. 5+ dogs? {" "}
+          50% off your first 3 months — limited to our first 10 new
+          customers. 5+ dogs? {" "}
           <a href="/contact" className="font-semibold text-teal underline underline-offset-4">
             Contact us
           </a>{" "}

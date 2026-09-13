@@ -22,7 +22,6 @@ export const PRICING = {
   weeklyBase: 79, // 1 dog, weekly
   perDogWeekly: 10, // per additional dog, at the weekly rate — scaled by the same frequency multiplier below
   oneTimeCleanup: 69, // flat
-  firstCleanupFree: true,
 } as const;
 
 export const FREQUENCY_MULTIPLIERS = {

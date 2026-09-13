@@ -211,8 +211,8 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
     const priceLine = quote.isOneTime
       ? `One-time cleanup: $${quote.oneTime}`
       : promoAvailable
-        ? `Estimated: $${Math.round((quote.monthly + addonTotal) * (1 - PROMO_DISCOUNT))}/month for first ${PROMO_MONTHS} months (promo requested), then $${quote.monthly + addonTotal}/month (${frequency}), first cleanup free`
-        : `Estimated: $${quote.monthly + addonTotal}/month (${frequency}), first cleanup free`;
+        ? `Estimated: $${Math.round((quote.monthly + addonTotal) * (1 - PROMO_DISCOUNT))}/month for first ${PROMO_MONTHS} months (promo requested), then $${quote.monthly + addonTotal}/month (${frequency})`
+        : `Estimated: $${quote.monthly + addonTotal}/month (${frequency})`;
 
     const resolvedStartDate =
       startDate === "custom" ? customDate || "not specified" : startDate || "not specified";
@@ -454,18 +454,13 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
             </div>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-2">
-            {!quote.isOneTime && (
-              <Sticker tone="coral" rotate={-2}>
-                First cleanup&apos;s free
-              </Sticker>
-            )}
-            {promoAvailable && (
+          {promoAvailable && (
+            <div className="mt-3 flex flex-wrap gap-2">
               <Sticker tone="green" rotate={2}>
                 🔥 {PROMO_DISCOUNT * 100}% off — {promoSpotsLeft ?? "a few"} spots left
               </Sticker>
-            )}
-          </div>
+            </div>
+          )}
           {yardSize === "large" && (
             <p className="mt-2 text-xs text-charcoal/60">
               Extra-large or heavily wooded yards may see a small adjustment,

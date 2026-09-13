@@ -89,8 +89,8 @@ export default async function BlogPostPage({
           Ready For A Cleaner Yard?
         </h3>
         <p className="mt-1.5 text-sm text-charcoal/70">
-          Get an instant price for Bluewater Bay & Niceville — first cleanup
-          free with any recurring plan.
+          Get an instant price for Bluewater Bay & Niceville — 50% off your
+          first 3 months for our first 10 new customers.
         </p>
         <CTAButton href="/quote" className="mt-4">
           Get Instant Quote →

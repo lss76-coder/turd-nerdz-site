@@ -1,6 +1,6 @@
 import HeroFeatureCarousel from "./HeroFeatureCarousel";
 import ZipQuoteForm from "./ZipQuoteForm";
-import { Sticker, PawScatter } from "@/components/Decor";
+import { PawScatter } from "@/components/Decor";
 import PromoBanner from "@/components/PromoBanner";
 
 export default function Hero() {
@@ -17,13 +17,7 @@ export default function Hero() {
       <PawScatter className="text-teal" />
 
       <div className="relative mx-auto max-w-3xl px-4 pb-16 pt-10 text-center sm:pt-16">
-        <PromoBanner className="mb-3" />
-        <Sticker tone="green" rotate={-3} className="mb-2 animate-wiggle text-xl sm:text-2xl">
-          🎉 First Cleanup FREE
-        </Sticker>
-        <p className="mb-4 text-sm font-bold uppercase tracking-wide text-coral">
-          With any new recurring plan
-        </p>
+        <PromoBanner className="mb-4" />
 
         <h1 className="font-heading text-5xl font-extrabold leading-[0.95] text-logo-green sm:text-6xl lg:text-7xl">
           The Turd

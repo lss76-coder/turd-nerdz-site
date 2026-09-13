@@ -17,7 +17,7 @@ const REVIEWS = [
   },
   {
     quote:
-      "Signed up for the first-cleanup-free offer and just... never cancelled. Worth every penny. Kai even remembered our dog's name on visit two.",
+      "Signed up during their launch promo and just... never cancelled. Worth every penny. Kai even remembered our dog's name on visit two.",
     name: "The Alvarez Family",
     detail: "Bluewater Bay, FL",
     rotate: "-rotate-1",

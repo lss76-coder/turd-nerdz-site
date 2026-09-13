@@ -61,9 +61,9 @@ export const FAQ_CATEGORIES: { title: string; items: AccordionItem[] }[] = [
           "Yes — genuinely anytime, no fees, no phone call required to \"retain\" you. Pause for vacation, skip a week, or cancel outright. We'd rather earn your business every visit than lock you into a contract.",
       },
       {
-        question: "Is the first cleanup really free?",
+        question: "Is there a current promotion?",
         answer:
-          "Really free. Sign up for any recurring plan (weekly or biweekly) and your first visit — which is usually the messiest one if it's been a while — doesn't cost you anything.",
+          "Yes — 50% off your first 3 months on any recurring plan, limited to our first 10 new customers. Once those spots are gone, the deal's gone with them, so it's first come, first served.",
       },
       {
         question: "How does billing work?",
