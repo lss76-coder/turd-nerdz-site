@@ -4,12 +4,10 @@ import { useEffect, useState } from "react";
 import { PROMO_DISCOUNT, PROMO_ENABLED, PROMO_PERIOD_LABEL, PROMO_TOTAL_SPOTS } from "@/lib/config";
 import { fetchPromoSpotsLeft } from "@/lib/promo";
 
-// Live "X spots left" banner for the launch promo. Starts optimistic
-// (assumes every spot is open) and corrects itself once the real count
-// comes back from the Sheet, so there's no layout jump on slow connections.
-// Hides itself entirely once spots run out or the promo is turned off.
+// Live "X spots left" banner for the launch promo. Stays hidden until the real count comes back from the Sheet (never shows a
+// guess), and hides itself once spots run out or the promo is turned off.
 export default function PromoBanner({ className = "" }: { className?: string }) {
-  const [spotsLeft, setSpotsLeft] = useState<number>(PROMO_TOTAL_SPOTS);
+  const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -21,7 +19,7 @@ export default function PromoBanner({ className = "" }: { className?: string }) 
     };
   }, []);
 
-  if (!PROMO_ENABLED || spotsLeft <= 0) return null;
+  if (!PROMO_ENABLED || spotsLeft === null || spotsLeft <= 0) return null;
 
   return (
     <div
