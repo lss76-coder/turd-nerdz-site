@@ -29,7 +29,7 @@ export default function PromoBanner({ className = "" }: { className?: string }) 
     >
       <span>🔥 {PROMO_DISCOUNT * 100}% off your first {PROMO_PERIOD_LABEL}</span>
       <span className="text-coral/50">·</span>
-      <span>only {spotsLeft} of {PROMO_TOTAL_SPOTS} spots left</span>
+      <span>only {spotsLeft} {spotsLeft === 1 ? "spot" : "spots"} left</span>
     </div>
   );
 }

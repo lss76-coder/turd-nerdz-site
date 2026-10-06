@@ -10,7 +10,7 @@ export default function FinalCTA() {
           Get Your Yard Back — 50% Off Your First Month
         </h2>
         <p className="max-w-lg text-cream/80">
-          Limited to our first 10 new customers. Sign up for any recurring
+          Limited to our first 3 new customers. Sign up for any recurring
           plan while a spot&apos;s still open — no contracts, no catch.
         </p>
         <CTAButton href="/quote" size="lg">

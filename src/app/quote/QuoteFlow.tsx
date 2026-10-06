@@ -457,7 +457,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
           {promoAvailable && (
             <div className="mt-3 flex flex-wrap gap-2">
               <Sticker tone="green" rotate={2}>
-                🔥 {PROMO_DISCOUNT * 100}% off — {promoSpotsLeft ?? "a few"} spots left
+                🔥 {PROMO_DISCOUNT * 100}% off — {promoSpotsLeft ?? "a few"} {promoSpotsLeft === 1 ? "spot" : "spots"} left
               </Sticker>
             </div>
           )}

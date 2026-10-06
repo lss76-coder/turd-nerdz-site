@@ -131,7 +131,7 @@ export default async function LocationPage({
             Ready For A Cleaner Yard In {loc.name}?
           </h3>
           <p className="mt-1.5 text-sm text-charcoal/70">
-            50% off your first month — limited to our first 10 new
+            50% off your first month — limited to our first 3 new
             customers.
           </p>
           <CTAButton href="/quote" className="mt-4">

@@ -48,7 +48,7 @@ var NOTIFY_EMAIL = "info@theturdnerdz.com";
 // (the "X spots left" banner); this script is the actual source of truth
 // for when the deal runs out, since it's the only thing every booking
 // passes through.
-var PROMO_TOTAL_SPOTS = 10;
+var PROMO_TOTAL_SPOTS = 3;
 
 // One-time manual step if email notifications ever come back as
 // "permission" errors: in the toolbar dropdown next to the Run button,

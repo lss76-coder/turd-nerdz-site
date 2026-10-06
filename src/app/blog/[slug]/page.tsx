@@ -90,7 +90,7 @@ export default async function BlogPostPage({
         </h3>
         <p className="mt-1.5 text-sm text-charcoal/70">
           Get an instant price for Bluewater Bay & Niceville — 50% off your
-          first month for our first 10 new customers.
+          first month for our first 3 new customers.
         </p>
         <CTAButton href="/quote" className="mt-4">
           Get Instant Quote →

@@ -64,7 +64,7 @@ export default function Footer() {
             Ready?
           </h3>
           <p className="mt-3 text-sm text-cream/80">
-            50% off your first month — limited to our first 10 new
+            50% off your first month — limited to our first 3 new
             customers.
           </p>
           <Link
