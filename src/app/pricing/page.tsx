@@ -113,7 +113,7 @@ export default function PricingPage() {
         </div>
 
         <p className="mt-4 text-center text-sm text-charcoal/60">
-          50% off your first month — limited to our first 3 new
+          50% off your first month — limited to our first 10 new
           customers. 5+ dogs? {" "}
           <a href="/contact" className="font-semibold text-teal underline underline-offset-4">
             Contact us

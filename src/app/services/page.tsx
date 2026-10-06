@@ -20,7 +20,7 @@ const SERVICES = [
     desc: "The core of what we do. Weekly, biweekly, monthly, or twice-a-week visits that keep your yard consistently clean — no buildup, no surprises.",
     bullets: [
       "Weekly, biweekly, monthly, or twice-weekly scheduling",
-      "50% off your first month for our first 3 new customers",
+      "50% off your first month for our first 10 new customers",
       "Photo confirmation every visit",
       "No contracts — pause or cancel anytime",
       `+$${PRICING.perDogWeekly}/month per additional dog (at the weekly rate)`,

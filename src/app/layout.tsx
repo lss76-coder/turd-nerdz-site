@@ -28,7 +28,7 @@ const permanentMarker = Permanent_Marker({
 
 const TITLE = "The Turd Nerdz | Dog Poop Pickup in Bluewater Bay & Niceville, FL";
 const DESCRIPTION =
-  "Weekly and biweekly dog waste removal for Bluewater Bay & Niceville, FL. No contracts, photo proof every visit, 50% off your first month for our first 3 customers. Get an instant quote in 30 seconds.";
+  "Weekly and biweekly dog waste removal for Bluewater Bay & Niceville, FL. No contracts, photo proof every visit, 50% off your first month for our first 10 customers. Get an instant quote in 30 seconds.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
