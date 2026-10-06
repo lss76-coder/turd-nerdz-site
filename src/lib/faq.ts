@@ -63,7 +63,7 @@ export const FAQ_CATEGORIES: { title: string; items: AccordionItem[] }[] = [
       {
         question: "Is there a current promotion?",
         answer:
-          "Yes — 50% off your first 3 months on any recurring plan, limited to our first 10 new customers. Once those spots are gone, the deal's gone with them, so it's first come, first served.",
+          "Yes — 50% off your first month on any recurring plan, limited to our first 10 new customers. Once those spots are gone, the deal's gone with them, so it's first come, first served.",
       },
       {
         question: "How does billing work?",

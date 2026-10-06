@@ -41,7 +41,8 @@ export const REFERRAL_CREDIT = 20;
 // it's what the script uses to decide when to stop honoring the deal.
 export const PROMO_ENABLED = true;
 export const PROMO_TOTAL_SPOTS = 10;
-export const PROMO_MONTHS = 3;
+export const PROMO_MONTHS = 1;
+export const PROMO_PERIOD_LABEL = PROMO_MONTHS === 1 ? "month" : `${PROMO_MONTHS} months`;
 export const PROMO_DISCOUNT = 0.5;
 
 // Tool/shoe sanitizing between every yard (kennel-grade disinfectant) is

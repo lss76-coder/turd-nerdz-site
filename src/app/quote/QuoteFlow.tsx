@@ -8,7 +8,7 @@ import {
   DEODORIZER_MONTHLY,
   PROMO_DISCOUNT,
   PROMO_ENABLED,
-  PROMO_MONTHS,
+  PROMO_PERIOD_LABEL,
   calculateQuote,
   Frequency,
   isZipInServiceArea,
@@ -211,7 +211,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
     const priceLine = quote.isOneTime
       ? `One-time cleanup: $${quote.oneTime}`
       : promoAvailable
-        ? `Estimated: $${Math.round((quote.monthly + addonTotal) * (1 - PROMO_DISCOUNT))}/month for first ${PROMO_MONTHS} months (promo requested), then $${quote.monthly + addonTotal}/month (${frequency})`
+        ? `Estimated: $${Math.round((quote.monthly + addonTotal) * (1 - PROMO_DISCOUNT))}/month for first ${PROMO_PERIOD_LABEL} (promo requested), then $${quote.monthly + addonTotal}/month (${frequency})`
         : `Estimated: $${quote.monthly + addonTotal}/month (${frequency})`;
 
     const resolvedStartDate =
@@ -269,7 +269,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
         {promoWon && (
           <p className="mx-auto mt-3 inline-block rounded-full border-2 border-coral bg-coral/10 px-4 py-2 font-heading text-sm font-bold text-coral-dark">
             🎉 You&apos;re one of our first customers —{" "}
-            {PROMO_DISCOUNT * 100}% off your first {PROMO_MONTHS} months is locked in!
+            {PROMO_DISCOUNT * 100}% off your first {PROMO_PERIOD_LABEL} is locked in!
           </p>
         )}
         <p className="mt-2 text-charcoal/70">
@@ -441,7 +441,7 @@ export default function QuoteFlow({ zip }: { zip?: string }) {
                     <span className="text-base font-semibold text-charcoal/60">/month</span>
                   </p>
                   <p className="text-sm text-charcoal/60">
-                    for your first {PROMO_MONTHS} months, then{" "}
+                    for your first {PROMO_PERIOD_LABEL}, then{" "}
                     <span className="line-through">${quote.monthly + addonTotal}/mo</span>
                   </p>
                 </div>

@@ -113,7 +113,7 @@ function doPost(e) {
     promoApplied = claimedBefore < PROMO_TOTAL_SPOTS;
     spotsLeftAfter = Math.max(0, PROMO_TOTAL_SPOTS - (claimedBefore + (promoApplied ? 1 : 0)));
     data["Promo Deal"] = promoApplied
-      ? "Yes — 50% off first 3 months (spot #" + (claimedBefore + 1) + ")"
+      ? "Yes — 50% off first month (spot #" + (claimedBefore + 1) + ")"
       : "No — spots filled";
   }
 

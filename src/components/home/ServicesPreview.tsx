@@ -45,7 +45,7 @@ export default function ServicesPreview() {
                 Recurring Scooping
               </h3>
               <p className="mt-1 text-sm text-charcoal/70">
-                Weekly or biweekly visits — 50% off your first 3 months for
+                Weekly or biweekly visits — 50% off your first month for
                 our first 10 new customers.
               </p>
               <ul className="mt-4 space-y-2 text-sm text-charcoal/80">
